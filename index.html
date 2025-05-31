@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام التتبع الذكي لصرافات البك العربي</title>
+    <title> نظام التتبع الذكي لصرافات البنك العربي في محافظة رام الله</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: #000; overflow: hidden; height: 100vh; }
-        #map { height: 100vh; width: 100%; }
+        #map { 
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
 
         /* Navigation HUD - Made smaller and more compact */
         .navigation-hud { 
@@ -26,12 +33,12 @@
             border: 1px solid rgba(255, 255, 255, 0.15); 
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6); 
             z-index: 1000; 
-            width: 200px; /* Reduced from 320px */
+            width: 200px;
             text-align: center; 
-            font-size: 0.85rem; /* Smaller base font */
+            font-size: 0.85rem;
         }
         .speed-indicator { 
-            font-size: 1.4rem; /* Reduced from 2.2rem */
+            font-size: 1.4rem;
             font-weight: bold; 
             color: #00ff88; 
             text-shadow: 0 0 8px rgba(0, 255, 136, 0.4); 
@@ -41,7 +48,7 @@
             display: flex; 
             justify-content: space-between; 
             margin: 6px 0; 
-            font-size: 0.75rem; /* Smaller text */
+            font-size: 0.75rem;
             align-items: center;
         }
         .eta-info { 
@@ -49,7 +56,7 @@
             padding: 4px 8px; 
             border-radius: 8px; 
             margin: 4px 0; 
-            font-size: 0.75rem; /* Smaller text */
+            font-size: 0.75rem;
         }
 
         /* Arab Bank ATM Panel */
@@ -70,7 +77,7 @@
 
         .location-panel { 
             position: absolute; 
-            bottom: 20px; 
+            bottom: 100px; 
             left: 20px; 
             background: rgba(0, 0, 0, 0.9); 
             backdrop-filter: blur(10px); 
@@ -132,25 +139,276 @@
             box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
         }
 
-        .btn-modern { background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); border: none; color: white; padding: 10px 15px; border-radius: 8px; margin: 3px; transition: all 0.3s ease; font-weight: 500; }
-        .btn-modern:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); color: white; }
-        .btn-danger-modern { background: linear-gradient(45deg, #ff6b6b 0%, #ee5a24 100%); }
-        .btn-success-modern { background: linear-gradient(45deg, #00d2ff 0%, #3a7bd5 100%); }
-        .form-control-modern { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; border-radius: 8px; padding: 8px 12px; }
-        .compass { width: 50px; height: 50px; border-radius: 50%; background: radial-gradient(circle, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; margin: 10px auto; position: relative; box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
-        .compass::before { content: '↑'; color: white; font-size: 1.5rem; font-weight: bold; }
-        .glow-text { text-shadow: 0 0 10px currentColor; }
-        .info-item { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; padding: 5px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        .info-label { font-weight: 500; opacity: 0.8; }
-        .info-value { font-weight: bold; color: #00ff88; }
-        .destination-btn { width: 100%; margin-bottom: 8px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 12px; border-radius: 8px; transition: all 0.3s ease; }
-        .destination-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(5px); color: white; }
-        .destination-btn.active { background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); border-color: #667eea; }
+        .btn-modern { 
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); 
+            border: none; 
+            color: white; 
+            padding: 10px 15px; 
+            border-radius: 8px; 
+            margin: 3px; 
+            transition: all 0.3s ease; 
+            font-weight: 500; 
+        }
+        .btn-modern:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); 
+            color: white; 
+        }
+        .btn-danger-modern { 
+            background: linear-gradient(45deg, #ff6b6b 0%, #ee5a24 100%); 
+        }
+        .btn-success-modern { 
+            background: linear-gradient(45deg, #00d2ff 0%, #3a7bd5 100%); 
+        }
+        .form-control-modern { 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            color: white; 
+            border-radius: 8px; 
+            padding: 8px 12px; 
+        }
+        .compass { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 50%; 
+            background: radial-gradient(circle, #667eea 0%, #764ba2 100%); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 10px auto; 
+            position: relative; 
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); 
+        }
+        .compass::before { 
+            content: '↑'; 
+            color: white; 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+        }
+        .glow-text { 
+            text-shadow: 0 0 10px currentColor; 
+        }
+        .info-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin: 8px 0; 
+            padding: 5px 0; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        .info-label { 
+            font-weight: 500; 
+            opacity: 0.8; 
+        }
+        .info-value { 
+            font-weight: bold; 
+            color: #00ff88; 
+        }
+
+        /* Bottom Action Buttons */
+        .bottom-actions {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .contact-btn {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            min-width: 120px;
+            text-align: center;
+        }
+        .contact-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        .email-btn {
+            background: linear-gradient(45deg, #4e54c8, #8f94fb);
+        }
+        .emergency-btn {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        }
+
+        /* Right Action Buttons */
+        .right-actions {
+            position: absolute;
+            bottom: 70px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .action-btn {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        .export-btn {
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+        }
+        .feedback-toggle {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        }
+
+        /* Panels */
+        .feedback-panel {
+            position: absolute;
+            bottom: 120px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            width: 300px;
+            display: none;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+        .feedback-panel h6 {
+            color: #00ff88;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .feedback-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .feedback-form select, .feedback-form textarea {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 0.8rem;
+        }
+        .feedback-form textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .star-rating {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .star-rating i {
+            color: #666;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+        .star-rating i.active {
+            color: gold;
+        }
+
+        /* Nearby Branches Panel */
+        .branches-panel {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            width: 300px;
+            display: none;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+        .branches-panel h6 {
+            color: #00ff88;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .branches-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .branch-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .branch-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .branch-distance {
+            color: #00ff88;
+            font-size: 0.8rem;
+        }
+
+        /* Emergency Numbers Panel */
+        .emergency-panel {
+            position: absolute;
+            bottom: 70px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            width: 250px;
+            display: none;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+        .emergency-panel h6 {
+            color: #ff416c;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .emergency-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .emergency-name {
+            font-weight: bold;
+        }
+        .emergency-number {
+            color: #00ff88;
+        }
 
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
             .navigation-hud {
-                width: 160px; /* Even smaller on mobile */
+                width: 160px;
                 padding: 6px 8px; 
                 top: 10px; 
                 left: 10px; 
@@ -196,7 +454,7 @@
             .location-panel {
                 width: 180px; 
                 left: 10px; 
-                bottom: 10px; 
+                bottom: 100px; 
                 padding: 8px; 
                 border-radius: 10px; 
             }
@@ -232,9 +490,35 @@
                 height: 40px;
                 padding: 6px;
             }
+
+            .bottom-actions {
+                bottom: 10px;
+                gap: 5px;
+            }
+            .contact-btn {
+                padding: 8px 12px;
+                font-size: 0.7rem;
+                min-width: 100px;
+            }
+
+            .right-actions {
+                bottom: 60px;
+                right: 10px;
+            }
+            .action-btn {
+                padding: 6px 10px;
+                font-size: 0.7rem;
+            }
+
+            .feedback-panel, .branches-panel {
+                width: 250px;
+                padding: 10px;
+            }
+            .emergency-panel {
+                width: 220px;
+            }
         }
 
-        /* Extra small screens */
         @media (max-width: 500px) {
             .navigation-hud {
                 width: 140px; 
@@ -294,6 +578,28 @@
                 height: 35px;
                 padding: 4px;
             }
+
+            .bottom-actions {
+                bottom: 5px;
+            }
+            .contact-btn {
+                padding: 6px 8px;
+                font-size: 0.6rem;
+                min-width: 80px;
+            }
+
+            .right-actions {
+                bottom: 50px;
+            }
+            .action-btn {
+                padding: 5px 8px;
+                font-size: 0.6rem;
+            }
+
+            .feedback-panel, .branches-panel {
+                width: 220px;
+                padding: 8px;
+            }
         }
     </style>
 </head>
@@ -315,6 +621,7 @@
         <h6 class="text-center mb-3 glow-text">🏧 البنك العربي ATM</h6>
         <button id="find-nearest-atm-btn" class="btn btn-success-modern w-100 mb-2">🔍 أوجد أقرب ATM</button>
         <button id="recenter-btn" class="btn btn-modern w-100 mb-2">📍 توسيط الموقع</button>
+        <button id="nearby-branches-btn" class="btn btn-modern w-100 mb-2">🏢 اطلع على مواقعنا القريبة منك</button>
         <div class="form-check form-switch mt-2">
             <input class="form-check-input" type="checkbox" id="auto-center" checked>
             <label class="form-check-label text-white" for="auto-center">
@@ -341,6 +648,81 @@
         <button id="mode-walk-btn" class="travel-mode-btn" data-mode="walking">🚶‍♂️</button>
     </div>
 
+    <!-- Bottom Action Buttons -->
+    <div class="bottom-actions">
+        <button class="contact-btn email-btn" id="email-btn">📧 البريد الالكتروني</button>
+        <button class="contact-btn emergency-btn" id="emergency-btn">🆘 أرقام الطوارئ</button>
+    </div>
+
+    <!-- Right Action Buttons -->
+    <div class="right-actions">
+        <button class="action-btn export-btn" id="export-btn">
+            <i class="fas fa-download"></i> تصدير
+        </button>
+        <button class="action-btn feedback-toggle" id="feedback-toggle">
+            <i class="fas fa-star"></i> تقييم
+        </button>
+    </div>
+
+    <!-- Nearby Branches Panel -->
+    <div class="branches-panel" id="branches-panel">
+        <h6>المواقع القريبة منك</h6>
+        <div class="branches-list" id="branches-list">
+            <!-- Will be populated dynamically -->
+        </div>
+    </div>
+
+    <!-- Emergency Numbers Panel -->
+    <div class="emergency-panel" id="emergency-panel">
+        <h6>أرقام الطوارئ</h6>
+        <div class="emergency-item">
+            <div class="emergency-name">الشرطة</div>
+            <div class="emergency-number">100</div>
+        </div>
+        <div class="emergency-item">
+            <div class="emergency-name">الإسعاف</div>
+            <div class="emergency-number">101</div>
+        </div>
+        <div class="emergency-item">
+            <div class="emergency-name">الدفاع المدني</div>
+            <div class="emergency-number">102</div>
+        </div>
+        <div class="emergency-item">
+            <div class="emergency-name">خدمة العملاء</div>
+            <div class="emergency-number">022953333</div>
+        </div>
+    </div>
+
+    <!-- Feedback Panel -->
+    <div class="feedback-panel" id="feedback-panel">
+        <h6>الإبلاغ عن مشكلة</h6>
+        <form class="feedback-form" id="feedback-form">
+            <div class="star-rating" id="star-rating">
+                <i class="fas fa-star" data-rating="1"></i>
+                <i class="fas fa-star" data-rating="2"></i>
+                <i class="fas fa-star" data-rating="3"></i>
+                <i class="fas fa-star" data-rating="4"></i>
+                <i class="fas fa-star" data-rating="5"></i>
+            </div>
+            <select id="problem-type" required>
+                <option value="" disabled selected>اختر نوع المشكلة</option>
+                <option value="ازدحام أو طوابير طويلة">ازدحام أو طوابير طويلة</option>
+                <option value="تعطل الصراف أو توقفه عن العمل">تعطل الصراف أو توقفه عن العمل</option>
+                <option value="نفاد النقود (ATM Out of Service)">نفاد النقود (ATM Out of Service)</option>
+                <option value="نسيان كلمة المرور أو مشاكل في البطاقة">نسيان كلمة المرور أو مشاكل في البطاقة</option>
+                <option value="عدم قبول البطاقة">عدم قبول البطاقة (مثلاً: انتهاء صلاحيتها أو عدم توافقها)</option>
+                <option value="أخطاء في قراءة البطاقة أو الماكينة">أخطاء في قراءة البطاقة أو الماكينة</option>
+                <option value="انقطاع الكهرباء أو مشاكل الشبكة">انقطاع الكهرباء أو مشاكل الشبكة</option>
+                <option value="أخطاء في المبلغ المسحوب">أخطاء في المبلغ المسحوب (مثلاً: عدم استلام كامل المبلغ)</option>
+                <option value="فقدان البطاقة بعد السحب">فقدان البطاقة بعد السحب (نسيانها في الماكينة)</option>
+                <option value="غير ذلك">غير ذلك</option>
+            </select>
+            <textarea id="feedback-text" placeholder="أخبرنا بالمزيد عن المشكلة (اختياري)"></textarea>
+            <button type="submit" class="btn btn-modern">إرسال التقرير</button>
+            <button type="button" id="cancel-feedback" class="btn btn-danger-modern">إلغاء</button>
+        </form>
+    </div>
+
     <script>
         // Initialize Mapbox
         mapboxgl.accessToken = 'pk.eyJ1IjoibW9oYW1tZWQtMTMzMSIsImEiOiJjbHY3dHFsaDcwZWcyMm9xaXBmdHVibm11In0.BDSWP06iKFsCOxq0IwxLBg';
@@ -357,18 +739,41 @@
         let destinationMarkers = [];
         let activeDestinationKey = null;
         let travelMode = 'driving'; 
+        let currentRating = 0;
+        let feedbackData = [];
+        let deviceOrientationListenerAttached = false;
 
-        const coordinatesSpan = document.getElementById('coordinates');
-        const accuracySpan = document.getElementById('accuracy');
-        const speedIndicator = document.getElementById('current-speed');
-        const compass = document.getElementById('compass');
-        const remainingDistanceSpan = document.getElementById('remaining-distance');
-        const etaSpan = document.getElementById('eta-time');
-        const autoCenterCheckbox = document.getElementById('auto-center');
-        const findNearestAtmBtn = document.getElementById('find-nearest-atm-btn');
-        const modeCarBtn = document.getElementById('mode-car-btn');
-        const modeWalkBtn = document.getElementById('mode-walk-btn');
+        // DOM Elements
+        const elements = {
+            coordinates: document.getElementById('coordinates'),
+            accuracy: document.getElementById('accuracy'),
+            speed: document.getElementById('current-speed'),
+            compass: document.getElementById('compass'),
+            distance: document.getElementById('remaining-distance'),
+            eta: document.getElementById('eta-time'),
+            autoCenter: document.getElementById('auto-center'),
+            feedbackToggle: document.getElementById('feedback-toggle'),
+            feedbackPanel: document.getElementById('feedback-panel'),
+            feedbackForm: document.getElementById('feedback-form'),
+            starRating: document.getElementById('star-rating'),
+            stars: document.querySelectorAll('#star-rating i'),
+            problemType: document.getElementById('problem-type'),
+            feedbackText: document.getElementById('feedback-text'),
+            exportBtn: document.getElementById('export-btn'),
+            cancelFeedback: document.getElementById('cancel-feedback'),
+            findNearestAtmBtn: document.getElementById('find-nearest-atm-btn'),
+            recenterBtn: document.getElementById('recenter-btn'),
+            nearbyBranchesBtn: document.getElementById('nearby-branches-btn'),
+            branchesPanel: document.getElementById('branches-panel'),
+            branchesList: document.getElementById('branches-list'),
+            emailBtn: document.getElementById('email-btn'),
+            emergencyBtn: document.getElementById('emergency-btn'),
+            emergencyPanel: document.getElementById('emergency-panel'),
+            modeCarBtn: document.getElementById('mode-car-btn'),
+            modeWalkBtn: document.getElementById('mode-walk-btn')
+        };
 
+        // Destinations data
         const destinations = {
             RamamllhaATM1: { name: "صراف البنك العربي 1", coordinates: [35.1979466, 31.9043281], icon: "🏧", isATM: true },
             RamamllhaATM2: { name: "صراف البنك العربي 2", coordinates: [35.2039468, 31.9047687], icon: "🏧", isATM: true },
@@ -379,157 +784,391 @@
             RamamllhaATM7: { name: "صراف البنك العربي 7", coordinates: [35.2115772, 31.9240344], icon: "🏧", isATM: true },
             RamamllhaATM8: { name: "صراف البنك العربي 8", coordinates: [35.1814044, 31.9598272], icon: "🏧", isATM: true },
             RamamllhaATM9: { name: "صراف البنك العربي 9", coordinates: [35.1931069, 31.9678030], icon: "🏧", isATM: true },
+            "al_huda_fuels": { name: "AL_Huda Fuels", coordinates: [35.19880027095686, 31.8855172870815], icon: "⛽", type: "محطة وقود" },
+            "al_masyoon": { name: "Al masyoon", coordinates: [35.2003326263602, 31.889717724395], icon: "🏢", type: "موقع" },
+            "millennium_atm": { name: "صراف الي فندق الميلينيوم", coordinates: [35.2048138891888, 31.89586792292947], icon: "🏧", type: "صراف آلي" },
+            "palestine_medical": { name: "فرع مجمع فلسطين طبي", coordinates: [35.20598278434559, 31.89902212033414], icon: "🏥", type: "فرع" },
+            "ramallah_center": { name: "مركزي رام الله تحتا", coordinates: [35.1966213415176, 31.90473157911436], icon: "🏢", type: "فرع رئيسي" },
+            "ramallah_al_balad": { name: "Ramallah Al Balad", coordinates: [35.19694313794926, 31.9047933680251], icon: "🏢", type: "فرع" },
+            "bravo_market": { name: "سوبر ماركت برافو", coordinates: [35.18895569811461, 31.90897031567543], icon: "🛒", type: "سوبر ماركت" },
+            "al_tireh": { name: "AL tireh", coordinates: [35.1862014247212, 31.91177197360297], icon: "🏢", type: "موقع" },
+            "beituniya": { name: "بيتونيا", coordinates: [35.17817649101558, 31.89858146338332], icon: "🏢", type: "موقع" },
+            "clock_roundabout": { name: "دوار ساعة", coordinates: [35.20375563474033, 31.90324281610504], icon: "⏱️", type: "معلم" },
+            "al_ram": { name: "الرام", coordinates: [35.22797703941472, 31.84872501996944], icon: "🏢", type: "موقع" },
+            "khawaja_station": { name: "محطة لخواجا", coordinates: [35.2215153326494, 31.87120989781428], icon: "⛽", type: "محطة وقود" },
+            "um_sharayet_atm": { name: "صراف ام شرايط", coordinates: [35.21164198403004, 31.88875366783402], icon: "🏧", type: "صراف آلي" },
+            "burj_al_sheikh": { name: "برج الشيخ", coordinates: [35.21045308185135, 31.89983734426793], icon: "🏢", type: "معلم" },
+            "national_towers": { name: "ابراج وطنية", coordinates: [35.21106937499199, 31.9017672420436], icon: "🏢", type: "معلم" },
+            "al_bireh_atm": { name: "Al Bireh Branch ATM", coordinates: [35.21079773282417, 31.906812970405], icon: "🏧", type: "صراف آلي" },
+            "al_bireh_branch": { name: "Al Bireh Branch", coordinates: [35.21080449091851, 31.90684187383359], icon: "🏦", type: "فرع" },
+            "central_branch": { name: "مركزي", coordinates: [35.20460755197826, 31.90511348411686], icon: "🏦", type: "فرع رئيسي" },
+            "al_manara_branch": { name: "فرع لمنارة", coordinates: [35.2046428163957, 31.90505336561647], icon: "🏦", type: "فرع" },
+            "ramallah_mall": { name: "رام الله مول", coordinates: [35.20656381431914, 31.90808420396556], icon: "🛍️", type: "مركز تسوق" },
+            "central_transmission": { name: "الارسال مركزي", coordinates: [35.20724478446887, 31.91711798293989], icon: "📡", type: "موقع" },
+            "palestine_tower": { name: "الارسال برج فلسطين", coordinates: [35.20721800327197, 31.91716938242694], icon: "🏢", type: "معلم" },
+            "al_baloa": { name: "البالوع _البيرة", coordinates: [35.2124992205616, 31.9242874323287], icon: "🏢", type: "موقع" },
+            "jawwal_area": { name: "منطقة شركة جوال _البيرة", coordinates: [35.2149078950963, 31.92821275469514], icon: "📱", type: "موقع" },
+            "mazaya_mall": { name: "مزايا مول", coordinates: [35.19355319098348, 31.93654676131946], icon: "🛍️", type: "مركز تسوق" },
+            "abu_qash": { name: "Abu Qash", coordinates: [35.1838117021113, 31.95163336160273], icon: "🏢", type: "موقع" },
+            "bzu_atm": { name: "BZU ATM", coordinates: [35.18139783339325, 31.95984726535798], icon: "🏧", type: "صراف آلي" },
+            "birzeit_atm": { name: "Birzeit ATM", coordinates: [35.19308757761658, 31.967836831381], icon: "🏧", type: "صراف آلي" },
+            "birzeit_branch": { name: "Birzeit Branch", coordinates: [35.19306462925778, 31.96786372766914], icon: "🏦", type: "فرع" },
+            "bank_arab": { name: "Bank Arab", coordinates: [35.19329281687995, 31.96917552710591], icon: "🏦", type: "فرع" },
+            "rawabi": { name: "Rawabi", coordinates: [35.19013009285347, 32.01137212340873], icon: "🏢", type: "موقع" },
+            "bayt_rima": { name: "Bayt Rima", coordinates: [35.1034090603974, 32.03893413888758], icon: "🏢", type: "موقع" },
+            "al_reehan": { name: "Al reehan Beanch", coordinates: [35.16881824290121, 31.9391827522339], icon: "🏦", type: "فرع" },
+            "bidu": { name: "Bidu", coordinates: [35.15210575252251, 31.83732408151624], icon: "🏢", type: "موقع" },
+            "dayr_ibzi": { name: "Dayr Ibzi", coordinates: [35.12528175323867, 31.91814793410924], icon: "🏢", type: "موقع" },
+            "beit_ur": { name: "Beit Ur al_Tahta", coordinates: [35.09016091506144, 31.8941542954906], icon: "🏢", type: "موقع" }
         };
 
-       
-
+        // Initialize the application
+        function initApp() {
             addDestinationMarkers();
+            setupEventListeners();
+            setupGeolocation();
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Feedback system
+            elements.feedbackToggle.addEventListener('click', toggleFeedbackPanel);
+            elements.cancelFeedback.addEventListener('click', resetFeedbackForm);
+            elements.stars.forEach(star => {
+                star.addEventListener('click', setRating);
+            });
+            elements.feedbackForm.addEventListener('submit', handleFeedbackSubmit);
+            
+            // Export functionality
+            elements.exportBtn.addEventListener('click', exportLocationData);
+            
+            // Navigation controls
+            elements.findNearestAtmBtn.addEventListener('click', findNearestAtmDestination);
+            elements.nearbyBranchesBtn.addEventListener('click', toggleNearbyBranches);
+            
+            // Contact buttons
+            elements.emailBtn.addEventListener('click', () => {
+                window.location.href = "mailto:support@example.com?subject=استفسار";
+            });
+            elements.emergencyBtn.addEventListener('click', toggleEmergencyPanel);
+            
+            // Close panels when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!elements.branchesPanel.contains(e.target) && e.target !== elements.nearbyBranchesBtn) {
+                    elements.branchesPanel.style.display = 'none';
+                }
+                if (!elements.emergencyPanel.contains(e.target) && e.target !== elements.emergencyBtn) {
+                    elements.emergencyPanel.style.display = 'none';
+                }
+                if (!elements.feedbackPanel.contains(e.target) && e.target !== elements.feedbackToggle) {
+                    elements.feedbackPanel.style.display = 'none';
+                }
+            });
+            
+            // Travel mode buttons
+            elements.modeCarBtn.addEventListener('click', () => {
+                travelMode = 'driving';
+                elements.modeCarBtn.classList.add('active');
+                elements.modeWalkBtn.classList.remove('active');
+                clearRoute();
+                if (activeDestinationKey) {
+                    calculateRouteFromCurrent(activeDestinationKey);
+                }
+            });
+
+            elements.modeWalkBtn.addEventListener('click', () => {
+                travelMode = 'walking';
+                elements.modeWalkBtn.classList.add('active');
+                elements.modeCarBtn.classList.remove('active');
+                clearRoute();
+                if (activeDestinationKey) {
+                    calculateRouteFromCurrent(activeDestinationKey);
+                }
+            });
+
+            // Recenter button
+            elements.recenterBtn.addEventListener('click', () => {
+                if (userLocation) {
+                    const options = {
+                        center: [userLocation.lng, userLocation.lat],
+                        zoom: 15
+                    };
+                    if (elements.autoCenter.checked) {
+                        const currentHeading = userMarker && userMarker.getElement().style.transform.includes('rotate') ?
+                                                parseFloat(userMarker.getElement().style.transform.replace(/[^\d.-]/g, '')) : null;
+                        if (currentHeading !== null && !isNaN(currentHeading)) {
+                            options.bearing = currentHeading;
+                        }
+                        options.pitch = 50; 
+                        options.zoom = 16;
+                    }
+                    map.flyTo(options);
+                } else {
+                    alert('الموقع غير متاح بعد لإعادة التوسيط.');
+                }
+            });
+
+            // Initialize map
+            map.on('load', () => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.watchPosition(
+                        updateUserLocation,
+                        handleGeolocationError,
+                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    );
+                } else {
+                    alert("المتصفح لا يدعم نظام تحديد المواقع. يرجى استخدام متصفح أحدث.");
+                }
+            });
+        }
+
+        // Toggle nearby branches panel
+        function toggleNearbyBranches() {
+            if (!userLocation) {
+                alert('الرجاء الانتظار حتى يتم تحديد موقعك الحالي');
+                return;
+            }
+            
+            if (elements.branchesPanel.style.display === 'block') {
+                elements.branchesPanel.style.display = 'none';
+                return;
+            }
+            
+            // Calculate distances and sort branches
+            const branchesWithDistance = Object.keys(destinations).map(key => {
+                const dest = destinations[key];
+                const distance = calculateDistance(
+                    userLocation.lat, 
+                    userLocation.lng, 
+                    dest.coordinates[1], 
+                    dest.coordinates[0]
+                );
+                return {
+                    ...dest,
+                    key,
+                    distance
+                };
+            }).sort((a, b) => a.distance - b.distance);
+            
+            // Populate branches list
+            elements.branchesList.innerHTML = '';
+            branchesWithDistance.forEach(branch => {
+                const branchElement = document.createElement('div');
+                branchElement.className = 'branch-item';
+                branchElement.innerHTML = `
+                    <div><strong>${branch.name}</strong></div>
+                    <div>${branch.type || (branch.isATM ? 'صراف آلي' : 'موقع')}</div>
+                    <div class="branch-distance">${branch.distance.toFixed(2)} كم</div>
+                `;
+                branchElement.addEventListener('click', () => {
+                    calculateRouteFromCurrent(branch.key);
+                    elements.branchesPanel.style.display = 'none';
+                });
+                elements.branchesList.appendChild(branchElement);
+            });
+            
+            elements.branchesPanel.style.display = 'block';
+        }
+
+        // Toggle emergency panel
+        function toggleEmergencyPanel() {
+            elements.emergencyPanel.style.display = 
+                elements.emergencyPanel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Setup geolocation tracking
+        function setupGeolocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition(
-                    position => {
-                        updateUserLocation(position);
-                    },
-                    error => {
-                        handleGeolocationError(error);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 0 
-                    }
+                    updateUserLocation,
+                    handleGeolocationError,
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 );
-            } else {
-                alert("المتصفح لا يدعم نظام تحديد المواقع. يرجى استخدام متصفح أحدث.");
             }
-        
+        }
 
+        // Update user location on map
+        function updateUserLocation(position) {
+            const { latitude, longitude, accuracy, heading, speed } = position.coords;
+            
+            // Update UI elements
+            elements.coordinates.textContent = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+            elements.accuracy.textContent = `${Math.round(accuracy)} م`;
+            elements.speed.textContent = speed ? `${(speed * 3.6).toFixed(1)} كم/س` : "0 كم/س";
+            
+            // Update compass
+            updateCompass(heading);
+            
+            // Update user marker
+            updateUserMarker(longitude, latitude);
+            
+            // Auto-center if enabled
+            if (elements.autoCenter.checked) {
+                centerMap(longitude, latitude, heading);
+            }
+            
+            // Store current location
+            userLocation = { lat: latitude, lng: longitude };
+        }
+
+        // Update compass direction
+        function updateCompass(heading) {
+            if (typeof heading === 'number' && !isNaN(heading)) {
+                elements.compass.style.transform = `rotate(${heading}deg)`;
+            } else if (window.DeviceOrientationEvent && !deviceOrientationListenerAttached) {
+                window.addEventListener('deviceorientation', handleOrientation, true);
+                deviceOrientationListenerAttached = true;
+            }
+        }
+
+        // Handle device orientation for compass
+        function handleOrientation(event) {
+            if (event.alpha !== null) {
+                elements.compass.style.transform = `rotate(${-event.alpha}deg)`;
+            }
+        }
+
+        // Update user marker on map
+        function updateUserMarker(lng, lat) {
+            if (!userMarker) {
+                const el = createUserMarker();
+                userMarker = new mapboxgl.Marker(el)
+                    .setLngLat([lng, lat])
+                    .addTo(map);
+            } else {
+                userMarker.setLngLat([lng, lat]);
+            }
+        }
+
+        // Create user marker element
+        function createUserMarker() {
+            const el = document.createElement('div');
+            el.innerHTML = `
+                <div style="width: 20px; height: 20px; background: #00ff88; border: 3px solid white; 
+                border-radius: 50%; box-shadow: 0 0 15px rgba(0, 255, 136, 0.7);"></div>
+            `;
+            return el;
+        }
+
+        // Center map on user location
+        function centerMap(lng, lat, heading) {
+            const options = {
+                center: [lng, lat],
+                zoom: 16,
+                pitch: 50,
+                essential: true
+            };
+            
+            if (typeof heading === 'number' && !isNaN(heading)) {
+                options.bearing = heading;
+            }
+            
+            map.flyTo(options);
+        }
+
+        // Handle geolocation errors
+        function handleGeolocationError(error) {
+            let message;
+            switch (error.code) {
+                case error.PERMISSION_DENIED: 
+                    message = "تم رفض طلب تحديد الموقع. يرجى السماح للوصول إلى موقعك.";
+                    break;
+                case error.POSITION_UNAVAILABLE: 
+                    message = "معلومات الموقع غير متوفرة حالياً. يرجى التأكد من تشغيل GPS.";
+                    break;
+                case error.TIMEOUT: 
+                    message = "انتهت مهلة طلب تحديد الموقع. يرجى التحقق من اتصالك بالإنترنت أو إشارة GPS.";
+                    break;
+                default: 
+                    message = "حدث خطأ غير معروف/متوقع في نظام تحديد المواقع.";
+            }
+            
+            console.error("GPS Error:", error);
+            alert(message);
+            
+            // Update UI to show error state
+            elements.coordinates.textContent = "غير متوفر";
+            elements.accuracy.textContent = "--";
+            elements.speed.textContent = "0 كم/س";
+        }
+
+        // Add destination markers to map
         function addDestinationMarkers() {
+            // Clear existing markers
             destinationMarkers.forEach(marker => marker.remove());
             destinationMarkers = [];
+            
+            // Add new markers
             Object.keys(destinations).forEach(key => {
+                const dest = destinations[key];
                 const el = document.createElement('div');
-                el.innerHTML = `<div style="background: #00ff88; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">${destinations[key].icon}</div>`;
+                el.innerHTML = `
+                    <div style="background: #00ff88; color: white; width: 40px; height: 40px; 
+                    border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+                    font-size: 1.2rem;">${dest.icon}</div>
+                `;
+                
                 const marker = new mapboxgl.Marker(el)
-                    .setLngLat(destinations[key].coordinates)
+                    .setLngLat(dest.coordinates)
                     .setPopup(new mapboxgl.Popup().setHTML(`
                         <div style="text-align: center; padding: 10px;">
-                            <h6>${destinations[key].name}</h6>
-                            <button onclick="calculateRouteFromCurrent('${key}')" 
-                                            style="background: #00ff88; color: white; border: none; 
-                                                    padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                            <h6>${dest.name}</h6>
+                            <div>${dest.type || (dest.isATM ? 'صراف آلي' : 'موقع')}</div>
+                            <button onclick="window.calculateRouteFromCurrent('${key}')" 
+                                    style="background: #00ff88; color: white; border: none; 
+                                           padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
                                 انطلق إلى هنا
                             </button>
                         </div>
                     `))
                     .addTo(map);
+                
                 destinationMarkers.push(marker);
             });
         }
 
-        function updateUserLocation(position) {
-            const { latitude, longitude, accuracy, heading, speed } = position.coords;
-            
-            coordinatesSpan.textContent = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-            accuracySpan.textContent = `${Math.round(accuracy)} متر`;
-            
-            const currentSpeedKmh = speed ? (speed * 3.6).toFixed(1) : 0;
-            speedIndicator.textContent = `${currentSpeedKmh} كم/س`;
-            
-            if (typeof heading === 'number' && !isNaN(heading)) {
-                compass.style.transform = `rotate(${heading}deg)`;
-            } else {
-                if (window.DeviceOrientationEvent && !window.deviceOrientationListenerAttached) {
-                    window.addEventListener('deviceorientation', handleOrientation, true);
-                    window.deviceOrientationListenerAttached = true; 
-                }
-            }
-            
-            if (!userMarker) {
-                const el = createUserMarker();
-                userMarker = new mapboxgl.Marker(el)
-                    .setLngLat([longitude, latitude])
-                    .addTo(map);
-            } else {
-                userMarker.setLngLat([longitude, latitude]);
-            }
-            
-            if (autoCenterCheckbox.checked) {
-                const cameraOptions = {
-                    center: [longitude, latitude],
-                    zoom: 16, 
-                    essential: true 
-                };
-                if (typeof heading === 'number' && !isNaN(heading)) {
-                    cameraOptions.bearing = heading;
-                }
-                cameraOptions.pitch = 50; 
-                map.flyTo(cameraOptions);
-            }
-            
-            userLocation = { lat: latitude, lng: longitude };
-        }
-        window.deviceOrientationListenerAttached = false;
-
-        function handleOrientation(event) {
-            if (navigator.geolocation && typeof (navigator.geolocation.getCurrentPosition(p => p.coords.heading)) !== 'number') {
-                     if (event.alpha !== null) {
-                         compass.style.transform = `rotate(${-event.alpha}deg)`;
-                     }
-            }
-        }
-
-        function handleGeolocationError(error) {
-            let message;
-            switch (error.code) {
-                case error.PERMISSION_DENIED: message = "تم رفض طلب تحديد الموقع. يرجى السماح للوصول إلى موقعك."; break;
-                case error.POSITION_UNAVAILABLE: message = "معلومات الموقع غير متوفرة حالياً. يرجى التأكد من تشغيل GPS."; break;
-                case error.TIMEOUT: message = "انتهت مهلة طلب تحديد الموقع. يرجى التحقق من اتصالك بالإنترنت أو إشارة GPS."; break;
-                default: message = "حدث خطأ غير معروف/متوقع في نظام تحديد المواقع.";
-            }
-            console.error("GPS Error:", error);
-            alert(message);
-            coordinatesSpan.textContent = "غير متوفر";
-            accuracySpan.textContent = "--";
-            speedIndicator.textContent = "0 كم/س";
-        }
-
-        function createUserMarker() {
-            const el = document.createElement('div');
-            el.innerHTML = `
-                <div style="width: 20px; height: 20px; background: #00ff88; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 15px rgba(0, 255, 136, 0.7);"></div>
-            `;
-            return el;
-        }
-
+        // Calculate distance between two coordinates
         function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; 
+            const R = 6371; // Earth radius in km
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c; 
+            return R * c; // Distance in km
         }
 
+        // Find nearest ATM destination
         function findNearestAtmDestination() {
             if (!userLocation) {
                 alert('الرجاء الانتظار حتى يتم تحديد موقعك الحالي');
                 return;
             }
+            
             let nearestDistance = Infinity;
             let nearestAtmKey = null;
+            
             Object.keys(destinations).forEach(key => {
                 const dest = destinations[key];
                 if (dest.isATM) {
-                    const distance = calculateDistance(userLocation.lat, userLocation.lng, dest.coordinates[1], dest.coordinates[0]);
+                    const distance = calculateDistance(
+                        userLocation.lat, 
+                        userLocation.lng, 
+                        dest.coordinates[1], 
+                        dest.coordinates[0]
+                    );
+                    
                     if (distance < nearestDistance) {
                         nearestDistance = distance;
                         nearestAtmKey = key;
                     }
                 }
             });
+            
             if (nearestAtmKey) {
-                calculateRoute(userLocation, destinations[nearestAtmKey].coordinates, destinations[nearestAtmKey].name);
+                calculateRouteFromCurrent(nearestAtmKey);
                 alert(`أقرب صراف للبنك العربي عليك هو : ${destinations[nearestAtmKey].name} (${nearestDistance.toFixed(2)} كم)`);
                 activeDestinationKey = nearestAtmKey;
             } else {
@@ -537,6 +1176,7 @@
             }
         }
 
+        // Calculate route from current location to destination
         function calculateRouteFromCurrent(destinationKey) {
             if (!userLocation) {
                 alert('الرجاء الانتظار حتى يتم تحديد موقعك الحالي');
@@ -548,6 +1188,7 @@
             }
         }
 
+        // Calculate route to destination
         async function calculateRoute(start, end, destinationName) {
             clearRoute();
             try {
@@ -609,9 +1250,9 @@
                     });
                     
                     const distance = (currentRoute.distance / 1000).toFixed(1);
-                    remainingDistanceSpan.textContent = `${distance} كم`;
+                    elements.distance.textContent = `${distance} كم`;
                     const etaMinutes = Math.round(currentRoute.duration / 60);
-                    etaSpan.textContent = `${etaMinutes} دقيقة`;
+                    elements.eta.textContent = `${etaMinutes} دقيقة`;
                     
                     const bounds = new mapboxgl.LngLatBounds();
                     bounds.extend([start.lng, start.lat]);
@@ -653,10 +1294,10 @@
                     });
 
                     const distance = calculateDistance(start.lat, start.lng, end[1], end[0]).toFixed(1);
-                    remainingDistanceSpan.textContent = `${distance} كم (خط مباشر)`;
+                    elements.distance.textContent = `${distance} كم (خط مباشر)`;
                     const estimatedSpeedKmH = (travelMode === 'walking' ? 5 : 40);
                     const etaMinutes = Math.round((distance / estimatedSpeedKmH) * 60);
-                    etaSpan.textContent = `${etaMinutes} دقيقة (تقديري)`;
+                    elements.eta.textContent = `${etaMinutes} دقيقة (تقديري)`;
 
                     const bounds = new mapboxgl.LngLatBounds();
                     bounds.extend([start.lng, start.lat]);
@@ -699,10 +1340,10 @@
                 });
 
                 const distance = calculateDistance(start.lat, start.lng, end[1], end[0]).toFixed(1);
-                remainingDistanceSpan.textContent = `${distance} كم (خط مباشر)`;
+                elements.distance.textContent = `${distance} كم (خط مباشر)`;
                 const estimatedSpeedKmH = (travelMode === 'walking' ? 5 : 40);
                 const etaMinutes = Math.round((distance / estimatedSpeedKmH) * 60);
-                etaSpan.textContent = `${etaMinutes} دقيقة (تقديري)`;
+                elements.eta.textContent = `${etaMinutes} دقيقة (تقديري)`;
 
                 const bounds = new mapboxgl.LngLatBounds();
                 bounds.extend([start.lng, start.lat]);
@@ -711,6 +1352,7 @@
             }
         }
 
+        // Clear current route
         function clearRoute() {
             if (map.getSource('route')) {
                 if (map.getLayer('route-glow')) {
@@ -718,58 +1360,131 @@
                 }
                 map.removeLayer('route');
                 map.removeSource('route');
-                remainingDistanceSpan.textContent = '-- كم';
-                etaSpan.textContent = '-- دقيقة';
+                elements.distance.textContent = '-- كم';
+                elements.eta.textContent = '-- دقيقة';
                 currentRoute = null;
+                activeDestinationKey = null;
             }
         }
 
-        document.getElementById('recenter-btn').addEventListener('click', () => {
-            if (userLocation) {
-                const options = {
-                    center: [userLocation.lng, userLocation.lat],
-                    zoom: 15
-                };
-                if (autoCenterCheckbox.checked) {
-                    const currentHeading = userMarker && userMarker.getElement().style.transform.includes('rotate') ?
-                                            parseFloat(userMarker.getElement().style.transform.replace(/[^\d.-]/g, '')) : null;
-                    if (currentHeading !== null && !isNaN(currentHeading)) {
-                        options.bearing = currentHeading;
-                    }
-                    options.pitch = 50; 
-                    options.zoom = 16;
+        // Feedback system functions
+        function toggleFeedbackPanel() {
+            elements.feedbackPanel.style.display = 
+                elements.feedbackPanel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function setRating(e) {
+            const rating = parseInt(e.target.getAttribute('data-rating'));
+            currentRating = rating;
+            
+            elements.stars.forEach((star, i) => {
+                if (i < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
                 }
-                map.flyTo(options);
-            } else {
-                alert('الموقع غير متاح بعد لإعادة التوسيط.');
-            }
-        });
+            });
+        }
 
-        // Event listener for the ATM button
-        findNearestAtmBtn.addEventListener('click', findNearestAtmDestination);
-        
-        // Event listeners for travel mode buttons
-        modeCarBtn.addEventListener('click', () => {
-            travelMode = 'driving';
-            modeCarBtn.classList.add('active');
-            modeWalkBtn.classList.remove('active');
-            clearRoute();
-            if (activeDestinationKey) {
-                calculateRouteFromCurrent(activeDestinationKey);
+        function handleFeedbackSubmit(e) {
+            e.preventDefault();
+            
+            const problemTypeValue = elements.problemType.value;
+            const feedbackTextValue = elements.feedbackText.value;
+            
+            if (!problemTypeValue) {
+                alert('الرجاء اختيار نوع المشكلة');
+                return;
             }
-        });
+            
+            // Create feedback object
+            const feedback = {
+                rating: currentRating,
+                problemType: problemTypeValue,
+                feedbackText: feedbackTextValue,
+                location: userLocation,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Store feedback
+            feedbackData.push(feedback);
+            console.log('Feedback submitted:', feedback);
+            
+            // Show confirmation and reset form
+            alert('شكراً لك على ملاحظاتك! تم إرسال تقرير المشكلة.');
+            resetFeedbackForm();
+        }
 
-        modeWalkBtn.addEventListener('click', () => {
-            travelMode = 'walking';
-            modeWalkBtn.classList.add('active');
-            modeCarBtn.classList.remove('active');
-            clearRoute();
-            if (activeDestinationKey) {
-                calculateRouteFromCurrent(activeDestinationKey);
+        function resetFeedbackForm() {
+            elements.feedbackForm.reset();
+            elements.stars.forEach(star => star.classList.remove('active'));
+            currentRating = 0;
+            elements.feedbackPanel.style.display = 'none';
+        }
+
+        // Export location data
+        function exportLocationData() {
+            if (!userLocation) {
+                alert('الموقع غير متاح بعد للتصدير');
+                return;
             }
-        });
+            
+            // Create GeoJSON data
+            const geoData = {
+                type: "FeatureCollection",
+                features: [
+                    {
+                        type: "Feature",
+                        properties: {
+                            name: "الموقع الحالي",
+                            timestamp: new Date().toISOString(),
+                            speed: elements.speed.textContent,
+                            accuracy: elements.accuracy.textContent
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: [userLocation.lng, userLocation.lat]
+                        }
+                    }
+                ]
+            };
+            
+            // Include feedback data if available
+            if (feedbackData.length > 0) {
+                geoData.features.push({
+                    type: "Feature",
+                    properties: {
+                        name: "بيانات التقييمات",
+                        feedbacks: feedbackData
+                    },
+                    geometry: {
+                        type: "Point",
+                        coordinates: [userLocation.lng, userLocation.lat]
+                    }
+                });
+            }
+            
+            // Convert to JSON string
+            const dataStr = JSON.stringify(geoData, null, 2);
+            
+            // Create download link
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = `موقع_${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            alert('تم تصدير بيانات الموقع بنجاح!');
+        }
 
-        window.calculateRouteFromCurrent = calculateRouteFromCurrent; 
+        // Initialize the application
+        initApp();
+
+        // Make functions available globally
+        window.calculateRouteFromCurrent = calculateRouteFromCurrent;
+        window.clearRoute = clearRoute;
     </script>
 </body>
 </html>
